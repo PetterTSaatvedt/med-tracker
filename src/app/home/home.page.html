@@ -17,15 +17,29 @@
   </ion-header>
 
   <ion-list>
-    @for (med of medications; track med.name) {
+    @for (med of medications; track med.name; let index = $index) {
       <ion-item>
         <ion-label>
           <h2>{{ med.name }}</h2>
           <p>{{ med.dosage }} at {{ med.time }}</p>
         </ion-label>
+        <ion-button (click)="confirmDelete(index, med.name)" color="danger">
+          <ion-icon name="remove-circle-outline">
+          </ion-icon>
+        </ion-button>
       </ion-item>
     }
+    @if (medications.length == 0) {
+      <p class="ion-padding">You currently have no tracked medications.</p>
+    }
   </ion-list>
+
+  <ion-alert
+    #deleteAlert
+    header="Delete Medication"
+    message="Are you sure you want to delete {{deleteMedName}} from your medication list?"
+    [buttons]="alertButtons"
+  ></ion-alert>
 
   <ion-modal trigger="open-modal-btn" #modal>
     <ng-template>
