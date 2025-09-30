@@ -3,7 +3,7 @@
     <ion-title>
       My Medication
     </ion-title>
-    <ion-button slot="end" (click)="addMedication()">
+    <ion-button id="open-modal-btn" slot="end">
       <ion-icon name="add-outline"></ion-icon>
     </ion-button>
   </ion-toolbar>
@@ -26,4 +26,53 @@
       </ion-item>
     }
   </ion-list>
+
+  <ion-modal trigger="open-modal-btn" #modal>
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="modal.dismiss()">
+              Cancel
+            </ion-button>
+          </ion-buttons>
+          <ion-title>
+            Medication Info
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="saveMedication()">
+              Save
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input
+            [(ngModel)]="newMedName"
+            label="Name of medication:"
+            type="text"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            [(ngModel)]="newMedDosage"
+            label="Dosage amount:"
+            type="text"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            [(ngModel)]="newMedTime"
+            label="When to take:"
+            type="text"
+          >
+          </ion-input>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>
