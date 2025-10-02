@@ -1,9 +1,10 @@
 import { Medication } from './../models/medication.model';
-import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef, OnInit } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonLabel, IonItem, IonList, IonButton, IonIcon, IonModal, IonInput, IonButtons, IonAlert } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addOutline, removeCircleOutline } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
+import { Storage } from '../services/storage';
 
 @Component({
   selector: 'app-home',
@@ -11,13 +12,9 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['home.page.scss'],
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonLabel, IonItem, IonList, IonButton, IonIcon, IonModal, IonInput, IonButtons, FormsModule, IonAlert],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
-  medications: Medication[] = [
-    { name: 'Aspirin', dosage: '100mg', time: '08:00', },
-    { name: 'Vitamin D', dosage: '1000 IU', time: '09:00' },
-    { name: 'Ibuprofen', dosage: '200mg', time: '20:00' }
-  ];
+  medications: Medication[] = [];
 
   // Form properties
   newMedName: string = '';
@@ -41,7 +38,7 @@ export class HomePage {
         if (this.medicationToDelete !== null) {
           this.deleteMedication(this.medicationToDelete);
           this.medicationToDelete = null;
-          this.cdr.detectChanges(); // needed to immediately apply changes to the UI
+          this.cdr.detectChanges();
         }
       }
     }
@@ -64,6 +61,12 @@ export class HomePage {
     this.medications.push(
       { name: this.newMedName, dosage: this.newMedDosage, time: this.newMedTime}
     );
+    this.storage.saveMedications(this.medications);
+  }
+
+  deleteMedication(index: number) {
+    this.medications.splice(index, 1);
+    this.storage.saveMedications(this.medications);
   }
 
   clearForm() {
@@ -78,11 +81,11 @@ export class HomePage {
     this.deleteAlert.present();
   }
 
-  deleteMedication(index: number) {
-    this.medications.splice(index, 1);
+  constructor(private cdr: ChangeDetectorRef, private storage: Storage) {
+    addIcons({addOutline, removeCircleOutline});
   }
 
-  constructor(private cdr: ChangeDetectorRef) {
-    addIcons({addOutline, removeCircleOutline})
+  async ngOnInit() {
+    this.medications = await this.storage.loadMedications();
   }
 }
