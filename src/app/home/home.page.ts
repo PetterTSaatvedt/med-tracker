@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonButton, IonList, IonItem, IonChip} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
@@ -13,7 +13,7 @@ import { LogStatus } from '../models/medication-log.model';
   styleUrls: ['home.page.scss'],
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonButton, IonList, IonItem, IonChip],
 })
-export class HomePage implements OnInit {
+export class HomePage {
   selectedDate: Date = new Date();
   get computedDate(): string {
     return this.selectedDate.toDateString();
@@ -84,16 +84,22 @@ export class HomePage implements OnInit {
     }
   }
 
-  logAdherence() {
-    this.storage.saveLogs(this.medicationLog);
-    // TODO: find solution to updating logs upon change to adherence status
+  toggleMedicationStatus(medicationName: string) {
+    const dateString = this.selectedDate.toISOString().split('T')[0];
+    const medication = this.medicationLog.find((log) => log.medicationName == medicationName && log.date == dateString);
+
+    if (medication) {
+      const status = medication.status == LogStatus.PENDING ? LogStatus.TAKEN : LogStatus.PENDING;
+      medication.status = status;
+      this.storage.saveLogs(this.medicationLog);
+    }
   }
   
   constructor(private storage: Storage) {
     addIcons({chevronBackOutline, chevronForwardOutline});
   }
 
-  async ngOnInit() {
+  async ionViewWillEnter() {
     this.medications = await this.storage.loadMedications();
     this.medicationLog = await this.storage.loadLogs();
     this.sortedMedications = this.medications.sort((a, b) => a.time.localeCompare(b.time));

@@ -13,7 +13,7 @@
 <ion-content [fullscreen]="true">
   <ion-list>
     @for (med of sortedMedications; track med.name) {
-      <ion-item class="med-item">
+      <ion-item class="med-item" (click)="toggleMedicationStatus(med.name)">
         <p slot="start">{{med.time}}</p>
         <p slot="start">{{med.name}}</p>
         <p slot="end">{{med.dosage}}</p>
