@@ -25,3 +25,18 @@
 #container a {
   text-decoration: none;
 }
+
+.circular-btn {
+  --border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  font-size: 0.75rem;
+}
+
+.circular-btn:hover {
+  opacity: 100%;
+}
+
+.med-item {
+  padding: 1rem;
+  width: 100%;
+}
