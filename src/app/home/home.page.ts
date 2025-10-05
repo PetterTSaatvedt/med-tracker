@@ -5,6 +5,7 @@ import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Storage } from '../services/storage';
 import { Medication } from '../models/medication.model';
 import { MedicationLog } from '../models/medication-log.model';
+import { LogStatus } from '../models/medication-log.model';
 
 @Component({
   selector: 'app-home',
@@ -22,20 +23,43 @@ export class HomePage implements OnInit {
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() - 1);
     this.selectedDate = newDate;
+    this.generateLogsForDate(this.selectedDate);
   }
 
   nextDay() {
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() + 1);
     this.selectedDate = newDate;
+    this.generateLogsForDate(this.selectedDate);
   }
 
   medications: Medication[] = [];
   medicationLog: MedicationLog[] = [];
   sortedMedications: Medication[] = [];
 
+  generateLogsForDate(date: Date) {
+    const dateString = date.toISOString().split('T')[0];
+
+    for (const med of this.medications) {
+      const logExists = this.medicationLog.find((log) => log.medicationName == med.name && log.date == dateString);
+      
+      if (!logExists) {
+        this.medicationLog.push(
+          {
+            medicationName: med.name,
+            date: dateString,
+            scheduledTime: med.time,
+            status: LogStatus.PENDING
+          }
+        )
+      }
+    }
+
+    this.storage.saveLogs(this.medicationLog);
+  }
+
   logAdherence() {
-    this.storage.saveLogs(this.medicationLog)
+    this.storage.saveLogs(this.medicationLog);
     // TODO: find solution to updating logs upon change to adherence status
   }
   
@@ -47,5 +71,7 @@ export class HomePage implements OnInit {
     this.medications = await this.storage.loadMedications();
     this.medicationLog = await this.storage.loadLogs();
     this.sortedMedications = this.medications.sort((a, b) => a.time.localeCompare(b.time));
+
+    this.generateLogsForDate(this.selectedDate);
   }
 }
