@@ -17,7 +17,7 @@
         <p slot="start">{{med.time}}</p>
         <p slot="start">{{med.name}}</p>
         <p slot="end">{{med.dosage}}</p>
-        <ion-chip slot="end">Not taken</ion-chip>
+        <ion-chip slot="end" [color]="getColorForStatus(getStatusForMedication(med.name))">{{getStatusForMedication(med.name)}}</ion-chip>
       </ion-item>
     }
     @if (sortedMedications.length == 0) {

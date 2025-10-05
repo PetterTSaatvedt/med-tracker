@@ -58,6 +58,32 @@ export class HomePage implements OnInit {
     this.storage.saveLogs(this.medicationLog);
   }
 
+  getStatusForMedication(medicationName: string) {
+    const dateString = this.selectedDate.toISOString().split('T')[0];
+    const status = this.medicationLog.find((log) => log.medicationName == medicationName && log.date == dateString)?.status;
+    
+    if (!status) {
+      return LogStatus.PENDING;
+    }
+
+    return status;
+  }
+
+  getColorForStatus(status: LogStatus): string {
+    switch (status) {
+      case LogStatus.TAKEN:
+        return 'success';
+      case LogStatus.PENDING:
+        return 'warning';
+      case LogStatus.MISSED:
+        return 'danger';
+      case LogStatus.SKIPPED:
+        return 'medium';
+      default:
+        return 'medium';
+    }
+  }
+
   logAdherence() {
     this.storage.saveLogs(this.medicationLog);
     // TODO: find solution to updating logs upon change to adherence status
